@@ -31,13 +31,28 @@ use Drupal\KernelTests\KernelTestBase;
  */
 class ApiDocTest extends KernelTestBase {
 
-  protected static $modules = ['user', 'text', 'file', 'apigee_edge_apidocs'];
+  protected static $modules = [
+    'user',
+    'text',
+    'file',
+    'apigee_edge_apidocs_test',
+    'apigee_edge_apidocs',
+  ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp() {
+    parent::setUp();
+
+    $this->installEntitySchema('user');
+    $this->installEntitySchema('apidoc');
+  }
 
   /**
    * Basic CRUD operations on a ApiDoc entity.
    */
   public function testEntity() {
-    $this->installEntitySchema('apidoc');
     $entity = ApiDoc::create([
       'name' => 'API 1',
       'description' => 'Test API 1',

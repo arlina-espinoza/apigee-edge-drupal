@@ -1,0 +1,9 @@
+name: 'Apigee Edge API Docs: Testing'
+type: module
+description: 'Support module for the Apigee Edge API Docs tests.'
+core: 8.x
+package: Testing
+
+dependencies:
+  - apigee_edge_apidocs:apigee_edge_apidocs
+  - drupal:syslog
