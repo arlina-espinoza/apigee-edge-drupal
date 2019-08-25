@@ -63,6 +63,8 @@ class ApigeeAuthKeyInput extends KeyInputBase {
 
     // Could be an empty array.
     $values = Json::decode($key_value);
+    $values['endpoint_type'] = $values['endpoint'] ? 'custom' : 'default';
+    $values['authorization_server_type'] = $values['authorization_server'] ? 'custom' : 'default';
 
     $form['auth_type'] = [
       '#type' => 'select',
