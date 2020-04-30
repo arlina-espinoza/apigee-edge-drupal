@@ -99,7 +99,7 @@ class EdgeEntityRemoveProductEventTest extends ApigeeEdgeActionsRulesKernelTestB
     /** @var \Drupal\apigee_edge\Entity\Controller\DeveloperAppCredentialControllerFactoryInterface $credential_factory */
     $credential_factory = \Drupal::service('apigee_edge.controller.developer_app_credential_factory');
     /** @var \Drupal\apigee_edge\Entity\Controller\AppCredentialControllerInterface $app_credential_controller */
-    $app_credential_controller = $credential_factory->developerAppCredentialController($this->account->uuid(), $developer_app->getName());
+    $app_credential_controller = $credential_factory->developerAppCredentialController($this->account->getEmail(), $developer_app->getName());
     $consumer_key = $this->randomString();
     $app_credential_controller->addProducts($consumer_key, [$api_product->id()]);
 

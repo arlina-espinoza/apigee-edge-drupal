@@ -109,7 +109,7 @@ class EdgeEntityAddProductEventTest extends ApigeeEdgeActionsRulesKernelTestBase
 
     /** @var \Drupal\apigee_edge\Entity\Controller\DeveloperAppCredentialControllerFactoryInterface $credential_factory */
     $credential_factory = \Drupal::service('apigee_edge.controller.developer_app_credential_factory');
-    $credential_factory->developerAppCredentialController($this->account->uuid(), $developer_app->getName())->addProducts($this->randomString(), [$api_product->id()]);
+    $credential_factory->developerAppCredentialController($this->account->getEmail(), $developer_app->getName())->addProducts($this->randomString(), [$api_product->id()]);
 
     $this->assertLogsContains("Event apigee_edge_actions_entity_add_product:developer_app was dispatched.");
     $this->assertLogsContains("Product {$api_product->getName()} was added to app {$developer_app->getName()}.");
