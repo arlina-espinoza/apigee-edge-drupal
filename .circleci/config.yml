@@ -168,7 +168,7 @@ code_sniffer: &code_sniffer
         working_directory: /var/www/html
         command: |
           cp ./modules/apigee_edge/.circleci/code-sniffer.sh /var/www/html
-          ./code-sniffer.sh apigee_edge
+          ./code-sniffer.sh apigee_edge 8
 
     - store_test_results:
         path: /var/www/html/artifacts
@@ -187,7 +187,7 @@ code_coverage: &code_coverage
     - run:
         working_directory: /var/www/html
         command: |
-          ./code-coverage-stats.sh apigee_edge
+          ./code-coverage-stats.sh apigee_edge 8
     - store_artifacts:
         path: /var/www/html/artifacts
 
@@ -203,7 +203,7 @@ d9_check: &d9_check
     - run:
         working_directory: /var/www/html
         command: |
-          ./d9.sh modules/apigee_edge
+          ./d9.sh apigee_edge 8
 
     - store_test_results:
         path: /var/www/html/artifacts/d9
