@@ -47,10 +47,6 @@ class RoboFile extends \Robo\Tasks
     $config = json_decode(file_get_contents('composer.json'));
     $config->extra->{"enable-patching"} = 'true';
     $config->extra->{"patches"} = new \stdClass();
-    $config->extra->{"drupal-scaffold"} = new \stdClass();
-    $config->extra->{"drupal-scaffold"}->{"locations"} = (object) [
-      'web-root' => '.',
-    ];
 
     file_put_contents('composer.json', json_encode($config));
 
@@ -67,7 +63,7 @@ class RoboFile extends \Robo\Tasks
 
     $this->taskFilesystemStack()
       ->chown('/tmp/artifacts', 'www-data', TRUE)
-      ->copy('modules/apigee_edge/.circleci/d9.sh', '/var/www/html/d9.sh')
+      ->copy('web/modules/contrib/apigee_edge/.circleci/d9.sh', '/var/www/html/d9.sh')
       ->chmod('/var/www/html/d9.sh', 0777)
       ->run();
   }
@@ -107,7 +103,7 @@ class RoboFile extends \Robo\Tasks
 
     foreach ($modules as $module) {
       list($module,) = explode(':', $module);
-      $config->extra->{"merge-plugin"}->include[] = "modules/$module/composer.json";
+      $config->extra->{"merge-plugin"}->include[] = "web/modules/contrib/$module/composer.json";
       $base = isset($config->extra->{"patches"}) ?  (array)$config->extra->{"patches"} : [];
       $config->extra->{"patches"} = (object)array_merge($base,
         (array)$this->getPatches($module));
@@ -177,10 +173,6 @@ class RoboFile extends \Robo\Tasks
     $this->taskExec('sed -i \'s/^zend_extension/;zend_extension/g\' /usr/local/etc/php/conf.d/xdebug.ini')
       ->run();
 
-    // The git checkout includes a composer.lock, and running composer update
-    // on it fails for the first time.
-    $this->taskFilesystemStack()->remove('composer.lock')->run();
-
     // Remove all core files and vendor.
     $this->taskFilesystemStack()
       ->taskDeleteDir('core')
@@ -226,7 +218,7 @@ class RoboFile extends \Robo\Tasks
    */
   protected function getPatches($module)
   {
-    $path = 'modules/' . $module . '/patches.json';
+    $path = 'web/modules/contrib/' . $module . '/patches.json';
     if (file_exists($path)) {
       return json_decode(file_get_contents($path));
     } else {
@@ -303,7 +295,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function overridePhpunitConfig($module)
   {
-    $module_path = "modules/$module";
+    $module_path = "web/modules/contrib/$module";
     // Copy in our custom phpunit.xml.core.dist file.
     if (file_exists("$module_path/phpunit.core.xml")) {
       $this->taskFilesystemStack()
@@ -429,16 +421,18 @@ class RoboFile extends \Robo\Tasks
 
     switch ($drupalCoreVersion) {
       case '9':
+        $config->require->{"composer/installers"} = '^1.9';
         $config->require->{"drupal/core-composer-scaffold"} = '^9';
         $config->require->{"drupal/core-recommended"} = '^9';
-        $config->require->{"drupal/core-dev"} = '^9';
+        $config->{"require-dev"}->{"drupal/core-dev"} = '^9';
 
         break;
 
       case '8':
-        $config->require->{"drupal/core-composer-scaffold"} = '~8';
-        $config->require->{"drupal/core-recommended"} = '~8';
-        $config->require->{"drupal/core-dev"} = '~8';
+        $config->require->{"composer/installers"} = '^1.2';
+        $config->require->{"drupal/core-composer-scaffold"} = '^8';
+        $config->require->{"drupal/core-recommended"} = '^8';
+        $config->{"require-dev"}->{"drupal/core-dev"} = '^8';
 
         // Add rules for testing apigee_edge_actions (only for D8).
         $config->require->{"drupal/rules"} = "3.0.0-alpha6";
@@ -459,13 +453,6 @@ class RoboFile extends \Robo\Tasks
   public function configureModuleDependencies()
   {
     $config = json_decode(file_get_contents('composer.json'));
-
-    // If you require core, you must not replace it.
-    unset($config->replace);
-
-    // Unset scripts that delete vendor test directories.
-    unset($config->scripts->{"post-package-install"});
-    unset($config->scripts->{"post-package-update"});
 
     // You can't merge from a package that is required.
     foreach ($config->extra->{"merge-plugin"}->include as $index => $merge_entry) {
@@ -489,7 +476,7 @@ class RoboFile extends \Robo\Tasks
 
       // Delete D8 only modules.
       $this->taskFilesystemStack()
-        ->taskDeleteDir('modules/apigee_edge/modules/apigee_edge_actions')
+        ->taskDeleteDir('web/modules/contrib/apigee_edge/modules/apigee_edge_actions')
         ->run();
     }
   }

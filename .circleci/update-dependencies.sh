@@ -1,7 +1,12 @@
 #!/bin/bash -ex
 
 # Make sure the robofile is in the correct location.
-cp modules/apigee_edge/.circleci/RoboFile.php ./
+cp web/modules/contrib/apigee_edge/.circleci/RoboFile.php ./
+
+# Make sure the composer template is in the correct location.
+rm ./composer.json
+rm ./composer.lock
+cp web/modules/contrib/apigee_edge/.circleci/composer.json.dist ./composer.json
 
 robo setup:skeleton
 robo add:modules $1

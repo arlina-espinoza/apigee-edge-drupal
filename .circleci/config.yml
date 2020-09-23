@@ -67,14 +67,15 @@ update_dependencies: &update_dependencies
     - print:
         message: Using Drupal core version << parameters.core-version >>
 
-    - checkout
+    - checkout:
+        path: ./web/modules/contrib
 
     - restore_cache: *restore_cache
 
     - run:
         working_directory: /var/www/html
         command: |
-          cp ./modules/apigee_edge/.circleci/update-dependencies.sh /var/www/html
+          cp ./web/modules/contrib/apigee_edge/.circleci/update-dependencies.sh /var/www/html
           ./update-dependencies.sh apigee_edge << parameters.core-version >>
 
     - save_cache: *save_cache
@@ -97,12 +98,13 @@ unit_kernel_tests: &unit_kernel_tests
     - attach_workspace:
         at: /var/www/html
 
-    - checkout
+    - checkout:
+        path: ./web/modules/contrib
 
     - run:
         working_directory: /var/www/html
         command: |
-          cp ./modules/apigee_edge/.circleci/test.sh /var/www/html
+          cp ./web/modules/contrib/apigee_edge/.circleci/test.sh /var/www/html
           ./test.sh apigee_edge << parameters.core-version >>
 
     - store_test_results:
@@ -120,12 +122,13 @@ functional_tests: &functional_tests
     - attach_workspace:
         at: /var/www/html
 
-    - checkout
+    - checkout:
+        path: ./web/modules/contrib
 
     - run:
         working_directory: /var/www/html
         command: |
-          cp ./modules/apigee_edge/.circleci/test-functional.sh /var/www/html
+          cp ./web/modules/contrib/apigee_edge/.circleci/test-functional.sh /var/www/html
           ./test-functional.sh apigee_edge << parameters.core-version >>
 
     - store_test_results:
@@ -142,12 +145,13 @@ functional_js_tests: &functional_js_tests
     - attach_workspace:
         at: /var/www/html
 
-    - checkout
+    - checkout:
+        path: ./web/modules/contrib
 
     - run:
         working_directory: /var/www/html
         command: |
-          cp ./modules/apigee_edge/.circleci/test-functional-js.sh /var/www/html
+          cp ./web/modules/contrib/apigee_edge/.circleci/test-functional-js.sh /var/www/html
           ./test-functional-js.sh apigee_edge << parameters.core-version >>
 
     - store_test_results:
@@ -162,12 +166,13 @@ code_sniffer: &code_sniffer
     - attach_workspace:
         at: /var/www/html
 
-    - checkout
+    - checkout:
+        path: ./web/modules/contrib
 
     - run:
         working_directory: /var/www/html
         command: |
-          cp ./modules/apigee_edge/.circleci/code-sniffer.sh /var/www/html
+          cp ./web/modules/contrib/apigee_edge/.circleci/code-sniffer.sh /var/www/html
           ./code-sniffer.sh apigee_edge
 
     - store_test_results:
@@ -182,7 +187,8 @@ code_coverage: &code_coverage
     - attach_workspace:
         at: /var/www/html
 
-    - checkout
+    - checkout:
+        path: ./web/modules/contrib
 
     - run:
         working_directory: /var/www/html
@@ -198,12 +204,13 @@ d9_check: &d9_check
     - attach_workspace:
         at: /var/www/html
 
-    - checkout
+    - checkout:
+        path: ./web/modules/contrib
 
     - run:
         working_directory: /var/www/html
         command: |
-          ./d9.sh modules/apigee_edge
+          ./d9.sh apigee_edge
 
     - store_test_results:
         path: /var/www/html/artifacts/d9
